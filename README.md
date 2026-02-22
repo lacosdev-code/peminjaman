@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PWA Peminjaman (Technician Portal) - PT. Sunggiardi 🚀
 
-## Getting Started
+Sistem PWA (Technician Portal) untuk PT. Sunggiardi. Berfungsi sebagai frontend operasional lapangan untuk memproses peminjaman dan pengembalian alat secara real-time. Terkoneksi ke Shared Supabase Database yang sama dengan Admin Dashboard.
 
-First, run the development server:
+## 🏗️ Struktur Arsitektur
+Sistem ini menggunakan arsitektur **"1 Database, 2 Frontends, 2 Github"**:
+
+| Komponen | Repository Github | Peran Utama |
+| :--- | :--- | :--- |
+| **Admin Web** | `sgd-inventaris-management` | Manajemen Master Data, Approval, & Laporan (PDF/Excel) |
+| **PWA Peminjaman** | `peminjaman` | Operasional Teknisi, Scan QR, & Laporan Kondisi Lapangan |
+| **Database** | (Supabase Shared) | Sumber kebenaran data tunggal untuk kedua frontend |
+
+## 🛠️ Aturan Main Berbagi Database
+1. **log_tool_handover**: CRUD utama (Peminjaman/Pengembalian) di PWA ini harus memanggil RPC `log_tool_handover` agar sinkron dengan Admin.
+2. **UX Lapangan**: PWA fokus pada Mobile-first, QR Scan, dan Upload Foto bukti.
+3. **Data Source**: Data teknisi diambil dari tabel `technicians`, dan status pinjaman diambil dari tabel `peminjaman`.
+
+## 🚀 Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📦 Push to GitHub
+```bash
+git add .
+git commit -m "Your description"
+git push origin main
+```
+*(GitHub: https://github.com/lacosdev-code/peminjaman.git)*

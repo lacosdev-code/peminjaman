@@ -1,0 +1,12 @@
+Ini adalah project **Technician Portal (PWA)** PT. Sunggiardi.
+**PENTING:** Project ini berbagi Database Supabase yang sama dengan project **Admin Web**.
+
+**Aturan Main Berbagi Database:**
+1. CRUD utama (Peminjaman/Pengembalian) di PWA ini harus memanggil RPC `log_tool_handover` agar sinkron dengan Admin.
+2. PWA fokus pada User Experience (UX) lapangan: Mobile-first, QR Scan, dan Upload Foto bukti.
+3. Data teknisi diambil dari tabel `technicians`, dan status pinjaman diambil dari tabel `peminjaman`.
+
+Struktur Repository:
+- Admin Web: `sgd-inventaris-management` (Manajemen Master, Laporan PDF/Excel)
+- PWA Peminjaman: `peminjaman` (Operasional Teknisi, Scan QR)
+- Database: Supabase Shared (Single Source of Truth)
