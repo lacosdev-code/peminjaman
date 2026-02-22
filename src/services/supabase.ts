@@ -75,6 +75,7 @@ export interface Technician {
     id: string;
     name: string;
     whatsapp: string;
+    avatar_url?: string;
 }
 
 /**
@@ -94,7 +95,7 @@ export async function authenticateTechnician(input: string) {
     // Fallback: try to find technician by name (case-insensitive)
     const { data: byName, error: nameError } = await supabase
         .from('technicians')
-        .select('id, name, whatsapp_number')
+        .select('id, name, whatsapp_number, avatar_url')
         .ilike('name', input.trim())
         .maybeSingle();
 
@@ -107,7 +108,8 @@ export async function authenticateTechnician(input: string) {
         technician: {
             id: byName.id,
             name: byName.name,
-            whatsapp: byName.whatsapp_number
+            whatsapp: byName.whatsapp_number,
+            avatar_url: byName.avatar_url
         } as Technician
     };
 }

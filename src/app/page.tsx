@@ -39,6 +39,7 @@ export default function TechnicianDashboard() {
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
   const [technicianName, setTechnicianName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -83,6 +84,7 @@ export default function TechnicianDashboard() {
     }
     const tech = JSON.parse(techData);
     setTechnicianName(tech.name);
+    setAvatarUrl(tech.avatar_url || null);
 
     const cachedTools = localStorage.getItem(CACHE_KEY_TOOLS);
     const cachedLogs = localStorage.getItem(CACHE_KEY_LOGS);
@@ -98,42 +100,54 @@ export default function TechnicianDashboard() {
     if (!technicianName) return;
 
     try {
-      // 1. Fetch recent activity logs for this technician
+      // 1. Fetch recent activity logs for this technician (for the "Aktivitas Terbaru" list)
       const { data: logsData, error: logsError } = await supabase
         .from('activity_logs')
         .select('*')
         .eq('details->>teknisi', technicianName)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(10);
 
       if (logsError) throw logsError;
       setRecentLogs(logsData || []);
       localStorage.setItem(CACHE_KEY_LOGS, JSON.stringify(logsData || []));
 
-      // 2. Calculate Active Tools from logs
-      // We process logs from oldest to newest to determine the current state of each tool
+      // 2. Fetch Active Items directly from the `peminjaman` table
+      // This is the source of truth as per the architecture guide
+      const { data: activeLoans, error: activeError } = await supabase
+        .from('peminjaman')
+        .select('*, inventaris_utama(*)')
+        .eq('status', 'Dipinjam') // or any appropriate status used by the Admin app
+        .ilike('peminjam', `%${technicianName}%`);
+
       const toolStates: Record<string, any> = {};
 
-      // Reverse to process from oldest to newest
-      const sortedLogs = [...(logsData || [])].reverse();
+      if (!activeError && activeLoans) {
+        activeLoans.forEach(loan => {
+          const asset = loan.inventaris_utama;
+          if (asset) {
+            toolStates[asset.nama] = {
+              id: `loan-${loan.id}`,
+              created_at: loan.tanggal_pinjam,
+              details: {
+                item_name: asset.nama,
+                item_id: asset.id,
+                type: 'Pinjam',
+                teknisi: technicianName,
+                condition: loan.kondisi_awal || 'Baik'
+              }
+            };
+          }
+        });
+      }
 
-      sortedLogs.forEach(log => {
-        const itemName = log.details.item_name;
-        if (log.details.type === 'Pinjam') {
-          toolStates[itemName] = log;
-        } else if (log.details.type === 'Kembali') {
-          delete toolStates[itemName];
-        }
-      });
-
-      // 3. Fetch assets directly assigned via `lokasi` in `inventaris_utama`
+      // 3. Fallback/Complement: Fetch assets directly assigned via `lokasi` in `inventaris_utama`
       const { data: directAssets, error: directError } = await supabase
         .from('inventaris_utama')
         .select('*')
         .ilike('lokasi', `%${technicianName}%`);
 
       if (!directError && directAssets) {
-        // Create mock log entries for these static assets so they fit the UI structure
         directAssets.forEach(asset => {
           if (!toolStates[asset.nama]) {
             toolStates[asset.nama] = {
@@ -141,8 +155,8 @@ export default function TechnicianDashboard() {
               created_at: asset.updated_at || asset.created_at || new Date().toISOString(),
               details: {
                 item_name: asset.nama,
-                item_id: asset.id, // Ensure item_id is populated for returns
-                type: 'Pinjam', // Displayed as borrowed
+                item_id: asset.id,
+                type: 'Pinjam',
                 teknisi: technicianName,
                 condition: asset.kondisi || 'Baik'
               }
@@ -150,6 +164,20 @@ export default function TechnicianDashboard() {
           }
         });
       }
+
+      // 4. Legacy/Migration: Parse logs to find items that might not be in the `peminjaman` table yet
+      // This ensures a smooth transition while the Admin app is being updated
+      const sortedLogs = [...(logsData || [])].reverse();
+      sortedLogs.forEach(log => {
+        const itemName = log.details.item_name;
+        if (log.details.type === 'Pinjam') {
+          if (!toolStates[itemName]) {
+            toolStates[itemName] = log;
+          }
+        } else if (log.details.type === 'Kembali') {
+          delete toolStates[itemName];
+        }
+      });
 
       const activeList = Object.values(toolStates);
       setActiveTools(activeList);
@@ -186,8 +214,12 @@ export default function TechnicianDashboard() {
       {/* Top Bar */}
       <header className="px-6 pt-8 pb-4 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-md z-20">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center text-primary-foreground font-bold shadow-gold">
-            {technicianName.charAt(0)}
+          <div className="w-10 h-10 rounded-full border-2 border-white/5 overflow-hidden gold-gradient flex items-center justify-center text-primary-foreground font-bold shadow-gold">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={technicianName} className="w-full h-full object-cover" />
+            ) : (
+              technicianName.charAt(0)
+            )}
           </div>
           <div>
             <p className="text-xs text-slate-500 font-medium">Selamat Bekerja,</p>
