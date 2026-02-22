@@ -171,13 +171,27 @@ export default function HandoverPage() {
             {/* Header */}
             <header className="p-6 flex items-center justify-between border-b border-white/5 sticky top-0 bg-background/80 backdrop-blur-md z-30">
                 <button
-                    onClick={() => step === 'TYPE' ? router.push('/') : setStep('TYPE')}
+                    onClick={() => {
+                        if (step === 'SUCCESS') {
+                            router.push('/');
+                        } else if (step === 'NOTES') {
+                            setStep('PHOTO');
+                        } else if (step === 'PHOTO') {
+                            setStep('CONDITION');
+                        } else if (step === 'CONDITION') {
+                            setStep('TYPE');
+                        } else {
+                            router.push('/');
+                        }
+                    }}
                     className="p-3 rounded-2xl glass-panel bg-white/5 active:scale-90 transition-transform"
                 >
                     <ChevronLeft size={24} className="text-slate-400" />
                 </button>
                 <div className="text-center flex-1">
-                    <p className="text-[10px] font-black tracking-[0.2em] text-primary uppercase italic">Setup Handover</p>
+                    <p className="text-[10px] font-black tracking-[0.2em] text-primary uppercase italic">
+                        {step === 'SUCCESS' ? 'Transaction Complete' : 'Setup Handover'}
+                    </p>
                     <h1 className="font-bold text-base truncate max-w-[180px] mx-auto">{item.nama}</h1>
                 </div>
                 <div className="w-12 h-12" /> {/* Spacer */}
@@ -303,15 +317,15 @@ export default function HandoverPage() {
                             </div>
 
                             {!photo ? (
-                                <div className="relative flex-1 rounded-[40px] overflow-hidden bg-black border-2 border-white/5 shadow-2xl min-h-[300px]">
-                                    <video
-                                        ref={videoRef}
-                                        autoPlay
-                                        playsInline
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-4 z-20">
-                                        <div className="flex justify-center gap-6">
+                                <>
+                                    <div className="relative flex-1 rounded-[40px] overflow-hidden bg-black border-2 border-white/5 shadow-2xl min-h-[300px]">
+                                        <video
+                                            ref={videoRef}
+                                            autoPlay
+                                            playsInline
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-x-0 bottom-8 flex justify-center gap-6 z-20">
                                             {/* Camera Capture Button */}
                                             <button
                                                 onClick={capturePhoto}
@@ -341,27 +355,28 @@ export default function HandoverPage() {
                                                 onChange={handleFileUpload}
                                             />
                                         </div>
+                                        {/* Overlay for Camera */}
+                                        <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none">
+                                            <div className="w-full h-full border border-white/20 rounded-2xl" />
+                                        </div>
+                                    </div>
 
-                                        {/* Skip Button */}
-                                        <button
-                                            onClick={() => {
-                                                // Stop camera before skipping
-                                                if (videoRef.current && videoRef.current.srcObject) {
-                                                    const stream = videoRef.current.srcObject as MediaStream;
-                                                    stream.getTracks().forEach(track => track.stop());
-                                                }
-                                                setStep('NOTES');
-                                            }}
-                                            className="text-white/70 hover:text-white text-xs font-bold uppercase tracking-widest bg-black/40 px-6 py-2 rounded-full backdrop-blur-md transition-colors"
-                                        >
-                                            Lewati Foto
-                                        </button>
-                                    </div>
-                                    {/* Overlay for Camera */}
-                                    <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none">
-                                        <div className="w-full h-full border border-white/20 rounded-2xl" />
-                                    </div>
-                                </div>
+                                    {/* Improved Skip Button outside the camera overlay */}
+                                    <button
+                                        onClick={() => {
+                                            // Stop camera before skipping
+                                            if (videoRef.current && videoRef.current.srcObject) {
+                                                const stream = videoRef.current.srcObject as MediaStream;
+                                                stream.getTracks().forEach(track => track.stop());
+                                            }
+                                            setStep('NOTES');
+                                        }}
+                                        className="w-full py-4 rounded-2xl bg-white/5 border-2 border-white/10 text-white/80 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all font-black text-xs uppercase tracking-[0.2em] shadow-xl flex items-center justify-center gap-2 group"
+                                    >
+                                        <span>Lewati Foto</span>
+                                        <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </>
                             ) : (
                                 <div className="relative flex-1 rounded-[40px] overflow-hidden border-2 border-primary/20 shadow-gold">
                                     <img src={photo} alt="Captured" className="w-full h-full object-cover" />
@@ -435,6 +450,57 @@ export default function HandoverPage() {
                                             <span className="text-lg font-black tracking-tight text-primary-foreground uppercase">KONFIRMASI SELESAI</span>
                                         </>
                                     )}
+                                </button>
+
+                                <button
+                                    onClick={() => router.push('/')}
+                                    className="w-full mt-4 p-4 rounded-2xl text-slate-500 font-bold uppercase tracking-widest text-[10px] border border-white/5 hover:bg-white/5 transition-all"
+                                >
+                                    Batal & Kembali
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {step === 'SUCCESS' && (
+                        <motion.div
+                            key="step-success"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex-1 flex flex-col items-center justify-center text-center space-y-8 py-12"
+                        >
+                            <div className="relative">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                                    className="w-32 h-32 rounded-[40px] gold-gradient flex items-center justify-center shadow-gold relative z-10"
+                                >
+                                    <Check size={64} className="text-primary-foreground" strokeWidth={4} />
+                                </motion.div>
+                                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
+                            </div>
+
+                            <div className="space-y-3">
+                                <h2 className="text-3xl font-black text-slate-100 tracking-tight">Berhasil!</h2>
+                                <p className="text-slate-400 font-medium max-w-[260px] mx-auto leading-relaxed">
+                                    Transaksi serah terima untuk <b>{item.nama}</b> telah berhasil tercatat di sistem.
+                                </p>
+                            </div>
+
+                            <div className="w-full pt-8 space-y-4">
+                                <button
+                                    onClick={() => router.push('/')}
+                                    className="w-full gold-gradient p-5 rounded-[24px] shadow-gold font-black tracking-tight text-primary-foreground uppercase active:scale-95 transition-all"
+                                >
+                                    KEMBALI KE BERANDA
+                                </button>
+
+                                <button
+                                    onClick={() => router.push('/assets')}
+                                    className="w-full p-5 rounded-[24px] bg-white/5 border border-white/10 text-slate-400 font-black tracking-tight uppercase hover:bg-white/10 transition-all"
+                                >
+                                    LIHAT DAFTAR ALAT
                                 </button>
                             </div>
                         </motion.div>
