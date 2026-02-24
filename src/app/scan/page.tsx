@@ -50,15 +50,18 @@ export default function ScanPage() {
     }, [router]);
 
     return (
-        <main className="min-h-screen bg-black text-white p-6 flex flex-col items-center justify-between relative overflow-hidden">
+        <main className="min-h-screen bg-white text-slate-900 p-6 flex flex-col items-center justify-between relative overflow-hidden">
             {/* Background Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/5 blur-[120px] -z-10" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/10 blur-[120px] -z-10" />
 
             {/* Header */}
-            <div className="w-full flex justify-between items-center z-10">
+            <div
+                style={{ paddingTop: 'var(--safe-top)' }}
+                className="w-full flex justify-between items-center z-10"
+            >
                 <Link href="/">
-                    <button className="p-3 rounded-2xl glass-panel bg-white/5 active:scale-90 transition-transform">
-                        <X size={24} className="text-slate-400" />
+                    <button className="p-3 rounded-2xl bg-slate-100 border border-slate-200 active:scale-90 transition-transform">
+                        <X size={24} className="text-slate-600" />
                     </button>
                 </Link>
                 <div className="flex flex-col items-center">
@@ -67,8 +70,8 @@ export default function ScanPage() {
                         Scanner Aktif
                     </div>
                 </div>
-                <button className="p-3 rounded-2xl glass-panel bg-white/5 active:scale-90 transition-transform">
-                    <Camera size={24} className="text-slate-400" />
+                <button className="p-3 rounded-2xl bg-slate-100 border border-slate-200 active:scale-90 transition-transform">
+                    <Camera size={24} className="text-slate-600" />
                 </button>
             </div>
 
@@ -77,7 +80,7 @@ export default function ScanPage() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="w-full aspect-square relative rounded-[40px] overflow-hidden border-2 border-primary/20 gold-glow"
+                    className="w-full aspect-square relative rounded-[40px] overflow-hidden border-2 border-primary/20 shadow-2xl"
                 >
                     {/* Custom Scanner UI Overlay */}
                     <div className="absolute inset-0 z-20 pointer-events-none">
@@ -95,26 +98,29 @@ export default function ScanPage() {
                         />
                     </div>
 
-                    <div id="qr-reader" className="w-full h-full object-cover grayscale" />
+                    <div id="qr-reader" className="w-full h-full object-cover" />
                 </motion.div>
 
                 <div className="text-center space-y-2">
-                    <p className="font-bold text-lg tracking-tight text-slate-100">Arahkan ke QR Alat</p>
-                    <p className="text-xs text-slate-500 font-medium max-w-[200px] mx-auto leading-relaxed">
+                    <p className="font-bold text-lg tracking-tight text-slate-800">Arahkan ke QR Alat</p>
+                    <p className="text-xs text-slate-400 font-medium max-w-[200px] mx-auto leading-relaxed">
                         Pastikan kode QR berada di dalam kotak scanner untuk identifikasi otomatis.
                     </p>
                 </div>
             </div>
 
             {/* Footer / Status */}
-            <div className="w-full pb-8 z-10 px-4">
-                <div className="glass-panel p-4 rounded-3xl border border-white/5 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-primary border border-white/5">
+            <div
+                style={{ paddingBottom: 'calc(2rem + var(--safe-bottom))' }}
+                className="w-full z-10 px-4"
+            >
+                <div className="bg-slate-50 p-4 rounded-3xl border border-slate-200 flex items-center gap-4 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-primary border border-slate-200 shadow-sm">
                         <ShieldAlert size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-slate-300">Tips Lapangan</p>
-                        <p className="text-[10px] text-slate-500 truncate font-medium">Gunakan cahaya yang cukup saat scanning.</p>
+                        <p className="text-xs font-bold text-slate-800">Tips Lapangan</p>
+                        <p className="text-[10px] text-slate-400 truncate font-medium">Gunakan cahaya yang cukup saat scanning.</p>
                     </div>
                 </div>
             </div>
@@ -123,7 +129,7 @@ export default function ScanPage() {
             <style jsx global>{`
         #qr-reader {
           border: none !important;
-          background: transparent !important;
+          background: #f8fafc !important;
         }
         #qr-reader__dashboard, #qr-reader__status_span {
           display: none !important;

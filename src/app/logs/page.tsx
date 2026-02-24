@@ -94,20 +94,23 @@ export default function LogsPage() {
     return (
         <main className="min-h-screen bg-background text-foreground pb-24">
             {/* Header */}
-            <header className="px-6 pt-8 pb-4 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-md z-20 border-b border-white/5">
+            <header
+                style={{ paddingTop: 'calc(2rem + var(--safe-top))' }}
+                className="px-6 pb-4 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-md z-20 border-b border-black/5"
+            >
                 <Link href="/">
-                    <button className="p-3 rounded-2xl glass-panel bg-white/5 active:scale-90 transition-transform">
+                    <button className="p-3 rounded-2xl glass-panel bg-black/5 active:scale-90 transition-transform">
                         <ChevronLeft size={20} className="text-slate-400" />
                     </button>
                 </Link>
                 <div className="text-center flex-1 mx-4">
                     <p className="text-[10px] font-black tracking-[0.2em] text-primary uppercase italic">Inventaris SGD</p>
-                    <h1 className="font-bold text-base text-slate-100">Riwayat Aktivitas</h1>
+                    <h1 className="font-bold text-base text-slate-800">Riwayat Aktivitas</h1>
                 </div>
                 <button
                     onClick={() => fetchLogs(true)}
                     disabled={refreshing}
-                    className="p-3 rounded-2xl glass-panel bg-white/5 active:scale-90 transition-transform"
+                    className="p-3 rounded-2xl glass-panel bg-black/5 active:scale-90 transition-transform"
                 >
                     <RefreshCw size={20} className={`text-slate-400 ${refreshing ? 'animate-spin' : ''}`} />
                 </button>
@@ -120,11 +123,11 @@ export default function LogsPage() {
                         // Skeleton Loader
                         <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                             {[...Array(5)].map((_, i) => (
-                                <div key={`skeleton-${i}`} className="glass-panel p-5 rounded-3xl border border-white/5 flex gap-4 animate-pulse">
-                                    <div className="w-12 h-12 rounded-2xl bg-slate-800 shrink-0" />
+                                <div key={`skeleton-${i}`} className="glass-panel p-5 rounded-3xl border border-black/5 flex gap-4 animate-pulse">
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-100 shrink-0" />
                                     <div className="flex-1 space-y-3">
-                                        <div className="h-4 bg-slate-800 rounded w-3/4" />
-                                        <div className="h-3 bg-slate-800 rounded w-1/2" />
+                                        <div className="h-4 bg-slate-100 rounded w-3/4" />
+                                        <div className="h-3 bg-slate-100 rounded w-1/2" />
                                     </div>
                                 </div>
                             ))}
@@ -138,16 +141,16 @@ export default function LogsPage() {
                             </button>
                         </motion.div>
                     ) : logs.length === 0 ? (
-                        <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-panel p-10 rounded-3xl text-center border-dashed border-white/5 flex flex-col items-center justify-center min-h-[300px]">
+                        <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-panel p-10 rounded-3xl text-center border-dashed border-black/5 flex flex-col items-center justify-center min-h-[300px]">
                             <History size={48} className="text-slate-700 mb-4" />
                             <p className="text-slate-400 text-sm font-black tracking-tight uppercase">Belum ada aktivitas</p>
-                            <p className="text-xs text-slate-500 mt-2 max-w-[200px]">Riwayat peminjaman dan pengembalian Anda akan muncul di sini.</p>
+                            <p className="text-xs text-slate-400 mt-2 max-w-[200px]">Riwayat peminjaman dan pengembalian Anda akan muncul di sini.</p>
                         </motion.div>
                     ) : (
                         <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
                             <div className="flex items-center justify-between px-1 mb-2">
-                                <h2 className="text-xs font-black uppercase tracking-widest text-slate-500">Semua Waktu</h2>
-                                <span className="text-[10px] font-bold bg-white/5 text-slate-400 px-2 py-0.5 rounded-full ring-1 ring-white/10">
+                                <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Semua Waktu</h2>
+                                <span className="text-[10px] font-bold bg-black/5 text-slate-400 px-2 py-0.5 rounded-full ring-1 ring-white/10">
                                     Total: {logs.length}
                                 </span>
                             </div>
@@ -158,7 +161,7 @@ export default function LogsPage() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05 }}
-                                    className="glass-panel p-5 rounded-3xl border border-white/5 flex gap-4 relative group hover:border-primary/20 transition-all active:scale-[0.98]"
+                                    className="glass-panel p-5 rounded-3xl border border-black/5 flex gap-4 relative group hover:border-primary/20 transition-all active:scale-[0.98]"
                                 >
                                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${log.details.type === 'Pinjam'
                                         ? 'bg-amber-500/10 text-amber-500 ring-1 ring-amber-500/20'
@@ -169,14 +172,14 @@ export default function LogsPage() {
 
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-start mb-1">
-                                            <h3 className="font-black text-slate-100 text-sm truncate uppercase tracking-tight pr-2">
+                                            <h3 className="font-black text-slate-800 text-sm truncate uppercase tracking-tight pr-2">
                                                 {log.details.item_name}
                                             </h3>
                                             <div className="flex flex-col items-end">
                                                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter shrink-0">
                                                     {new Date(log.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                                                 </span>
-                                                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-tighter shrink-0 mt-0.5">
+                                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter shrink-0 mt-0.5">
                                                     {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>

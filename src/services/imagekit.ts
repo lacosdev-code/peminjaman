@@ -7,7 +7,6 @@ const authenticationEndpoint = "/api/imagekit-auth";
 const imagekit = new ImageKit({
     publicKey,
     urlEndpoint,
-    authenticationEndpoint,
 });
 
 export interface UploadResponse {
@@ -30,6 +29,9 @@ export async function uploadToImageKit(base64Image: string, fileName: string): P
                     fileName: fileName,
                     useUniqueFileName: true,
                     folder: "/peminjaman-teknisi",
+                    signature: "",
+                    token: "",
+                    expire: 0,
                 },
                 function (err, result) {
                     if (err) {

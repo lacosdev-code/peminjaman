@@ -21,6 +21,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
 };
 
 import SessionWrapper from "@/components/SessionWrapper";
@@ -31,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="id">
       <body className={`${inter.className} antialiased bg-background text-foreground`}>
         <SessionWrapper>
           {children}

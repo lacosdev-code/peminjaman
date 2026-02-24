@@ -71,6 +71,61 @@ export async function getAllAssets() {
     return data;
 }
 
+/**
+ * Fetch assets permanently assigned to a technician from inventaris_orang table
+ */
+export async function getAssignedAssets(technicianId: string, technicianName?: string) {
+    // Real columns: id, orang, nama, jumlah, kondisi, keterangan, foto_url, technician_id
+    const SELECT_COLS = 'id, nama, orang, jumlah, kondisi, keterangan, foto_url, technician_id';
+
+    console.log('[getAssignedAssets] Looking up by technician_id:', technicianId);
+    const { data, error } = await supabase
+        .from('inventaris_orang')
+        .select(SELECT_COLS)
+        .eq('technician_id', technicianId);
+
+    if (error) console.error('[getAssignedAssets] Error by ID:', error.message);
+    console.log('[getAssignedAssets] Results by technician_id:', data?.length ?? 0, 'rows');
+
+    if (data && data.length > 0) {
+        return data.sort((a: any, b: any) => (a.nama || '').localeCompare(b.nama || ''));
+    }
+
+    // FALLBACK: match by name in 'orang' column
+    if (technicianName) {
+        console.warn('[getAssignedAssets] Falling back to name lookup for:', technicianName);
+        const { data: byName, error: nameError } = await supabase
+            .from('inventaris_orang')
+            .select(SELECT_COLS)
+            .ilike('orang', `%${technicianName}%`);
+
+        if (nameError) {
+            console.error('[getAssignedAssets] Name fallback error:', nameError.message);
+            return [];
+        }
+        console.log('[getAssignedAssets] Results by name:', byName?.length ?? 0, 'rows');
+        return (byName || []).sort((a: any, b: any) => (a.nama || '').localeCompare(b.nama || ''));
+    }
+
+    return [];
+}
+
+/**
+ * Update kondisi of an asset in inventaris_orang
+ */
+export async function updateAssetKondisi(assetId: number, kondisi: string) {
+    const { error } = await supabase
+        .from('inventaris_orang')
+        .update({ kondisi, updated_at: new Date().toISOString() })
+        .eq('id', assetId);
+
+    if (error) {
+        console.error('[updateAssetKondisi] Error:', error.message);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
+}
+
 export interface Technician {
     id: string;
     name: string;
