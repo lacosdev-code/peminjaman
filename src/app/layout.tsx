@@ -8,10 +8,6 @@ export const metadata: Metadata = {
   title: "Peminjaman Alat SGD",
   description: "Portal Peminjaman Alat Inventaris SGD",
   manifest: "/manifest.json",
-  icons: {
-    icon: "https://ik.imagekit.io/Sgd/sgd.png?updatedAt=1771273258582",
-    apple: "https://ik.imagekit.io/Sgd/sgd.png?updatedAt=1771273258582",
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
