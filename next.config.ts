@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  devIndicators: {
+    appIsrStatus: false, // Hides the static/ISR indicator ("N" logo)
+    buildActivity: false, // Hides the compiling indicator
+  },
 };
 
 export default nextConfig;
